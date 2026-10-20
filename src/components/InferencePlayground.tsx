@@ -102,6 +102,7 @@ export const InferencePlayground: React.FC<InferencePlaygroundProps> = ({
   const animFrameIdRef = useRef<number | null>(null);
   const lastInferTimeRef = useRef<number>(0);
   const lastFeatureMapTimeRef = useRef<number>(0);
+  const lastDrawPredictTimeRef = useRef<number>(0);
 
   // Uploaded image
   const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
@@ -197,7 +198,11 @@ export const InferencePlayground: React.FC<InferencePlaygroundProps> = ({
     ctx.stroke();
 
     if (isLiveInferencing && isModelTrained) {
-      predictFromDrawCanvas();
+      const now = performance.now();
+      if (now - lastDrawPredictTimeRef.current > 100) {
+        lastDrawPredictTimeRef.current = now;
+        predictFromDrawCanvas();
+      }
     }
   };
 
